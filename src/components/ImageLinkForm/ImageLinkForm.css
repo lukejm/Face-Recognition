@@ -1,0 +1,9 @@
+.center {
+    display: flex;
+    justify-content: center;
+}
+
+.form {
+    width: 500px;
+    background: linear-gradient(45deg, darkblue, darkred);
+}
