@@ -1,6 +1,6 @@
 import './ImageLinkForm.css';
 
-function ImageLinkForm() {
+function ImageLinkForm({ onChangeFunc, buttonSubmit }) {
   return (
     <div>
       <p className='f3 center'>
@@ -8,8 +8,9 @@ function ImageLinkForm() {
       </p>
       <div className='center form'>
         <div className='pa4 br3 shadow-5 center'>
-          <input className='f3 pa2 w-70 center' type='text' />
-          <button className='w-30 grow f4 link ph3 pv2 dib white bg-light-purple'>Detect</button>
+          <input className='f3 pa2 w-70 center' type='text' onChange={onChangeFunc}/>
+          <button className='w-30 grow f4 link ph3 pv2 dib white bg-light-purple'
+          onClick={buttonSubmit}>Detect</button>
         </div>
       </div>
     </div>
