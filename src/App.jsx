@@ -6,15 +6,19 @@ import Rank from "./components/Rank/Rank.jsx";
 import ParticlesComp from "./components/Particles/ParticlesComp.jsx";
 import {useState} from "react";
 import FaceRecognition from "./components/FaceRecognition/FaceRecognition.jsx";
-import clariAI from './components/FaceRecognition/Clarifai.jsx';
+import Clarifai from "./components/FaceRecognition/Clarifai.jsx";
 
 function App() {
   const defaultImg = 'https://fastly.picsum.photos/id/64/4326/2884.jpg?hmac=9_SzX666YRpR_fOyYStXpfSiJ_edO3ghlSRnH2w09Kg';
   const [img, setImage] = useState(defaultImg);
 
-  clariAI(defaultImg);
-  // setImage(defaultImg);
-
+  fetch(Clarifai(defaultImg))
+    .then(response => response.json())
+    .then((boxes => {
+      boxes.forEach(box => {
+        console.log(box.topRow);
+      })
+    }));
   const onButtonSubmit = (event) => {
   }
 
