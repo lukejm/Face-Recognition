@@ -1,9 +1,11 @@
+import './FaceRecognition.css';
 
-function FaceRecognition({image}) {
+function FaceRecognition({image, box}) {
   return (
     <div className='center ma'>
       <div className='absolute mt2'>
-        <img src={image} alt='default' width='400px' height='auto' />
+        <img src={image} id='scanImage' alt='default' width='400px' height='auto' />
+        <div className='bounding-box' style={{top: box.topRow, right: box.rightCol, bottom: box.bottomRow, left: box.leftCol}}></div>
       </div>
     </div>
   );

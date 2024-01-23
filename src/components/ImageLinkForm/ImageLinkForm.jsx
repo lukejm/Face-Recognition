@@ -8,9 +8,9 @@ function ImageLinkForm({ onChangeFunc, buttonSubmit }) {
       </p>
       <div className='center form'>
         <div className='pa4 br3 shadow-5 center'>
-          <input className='f3 pa2 w-70 center' type='text' onChange={onChangeFunc}/>
+          <input className='f3 pa2 w-70 center' type='text' id='urlInput' onChange={onChangeFunc}/>
           <button className='w-30 grow f4 link ph3 pv2 dib white bg-light-purple'
-          onClick={buttonSubmit}>Detect</button>
+          onClick={buttonSubmit(document.getElementById('urlInput'))}>Detect</button>
         </div>
       </div>
     </div>
