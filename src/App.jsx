@@ -7,6 +7,7 @@ import ParticlesComp from "./components/Particles/ParticlesComp.jsx";
 import {useState} from "react";
 import FaceRecognition from "./components/FaceRecognition/FaceRecognition.jsx";
 import credentials from './Credentials.js';
+import ProcessImage from "./components/FaceRecognition/ProcessImage.js";
 import processImage from "./components/FaceRecognition/ProcessImage.js";
 
 
@@ -14,9 +15,10 @@ import processImage from "./components/FaceRecognition/ProcessImage.js";
 
 export default function App() {
   const defaultImg = 'https://fastly.picsum.photos/id/64/4326/2884.jpg?hmac=9_SzX666YRpR_fOyYStXpfSiJ_edO3ghlSRnH2w09Kg';
-  const defaultBox = [{topRow: 0.2476034, leftCol: 0.4314273, bottomRow: 0.62233967, rightCol: 0.6275647}];
-  const [image, setImage] = useState(defaultImg);
-  const [boxes, setBoxes] = useState(defaultBox);
+  const defaultBoxes = [{topRow: 0.2476034, leftCol: 0.4314273, bottomRow: 0.62233967, rightCol: 0.6275647}];
+  const [image, setImage] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
+  const [boxes, setBoxes] = useState(null);
 
   const onImageChange = (IMAGE_URL) => {
     const creds = JSON.parse(credentials());
@@ -71,19 +73,25 @@ export default function App() {
         })
       })
       .catch(error => console.log('error', error));
-    setBoxes(boxCollection);
     setImage(IMAGE_URL);
+    setBoxes(boxCollection);
   }
 
+  function setBoxData() {
+    const imageEl = document.getElementById('scanImage');
+    setBoxes(processImage(defaultBoxes, imageEl.height, imageEl.width));
+  }
 
-  const onButtonSubmit = (url) => {
-    // onImageChange(defaultImg);
+  const onButtonSubmit = () => {
+    fetch(setImageUrl(image))
+      .then(setBoxData);
   }
 
   const onInputChange = (event) => {
-    console.log(event.target.value);
-    // setImage(event.target.value);
+    setImage(event.target.value);
+    console.log(image);
   }
+
   return (
     <div className='app'>
       <ParticlesComp />
@@ -91,7 +99,7 @@ export default function App() {
       <Logo />
       <Rank />
       <ImageLinkForm onChangeFunc={onInputChange} buttonSubmit={onButtonSubmit}/>
-      <FaceRecognition image={image} boxes={boxes}/>
+      <FaceRecognition imageURL={imageUrl} AppBoxes={boxes}/>
     </div>
   );
 }
