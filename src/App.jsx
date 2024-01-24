@@ -14,9 +14,9 @@ import processImage from "./components/FaceRecognition/ProcessImage.js";
 
 export default function App() {
   const defaultImg = 'https://fastly.picsum.photos/id/64/4326/2884.jpg?hmac=9_SzX666YRpR_fOyYStXpfSiJ_edO3ghlSRnH2w09Kg';
-  const defaultBox = {topRow: 0.2476034, leftCol: 0.4314273, bottomRow: 0.62233967, rightCol: 0.6275647};
+  const defaultBox = [{topRow: 0.2476034, leftCol: 0.4314273, bottomRow: 0.62233967, rightCol: 0.6275647}];
   const [image, setImage] = useState(defaultImg);
-  const [box, setBox] = useState(defaultBox);
+  const [boxes, setBoxes] = useState(defaultBox);
 
   const onImageChange = (IMAGE_URL) => {
     const creds = JSON.parse(credentials());
@@ -52,6 +52,8 @@ export default function App() {
       body: raw
     };
 
+    let box = {};
+    let boxCollection = [];
 
     fetch("https://api.clarifai.com/v2/models/" + MODEL_ID + "/versions/" + MODEL_VERSION_ID + "/outputs", requestOptions)
       .then(response => response.json())
@@ -64,10 +66,12 @@ export default function App() {
           box.leftCol = boundingBox.left_col.toFixed(3);
           box.bottomRow = boundingBox.bottom_row.toFixed(3);
           box.rightCol = boundingBox.right_col.toFixed(3);
-          setBox(processImage(box));
+          // setBox(processImage(box));
+          boxCollection.push(box);
         })
       })
       .catch(error => console.log('error', error));
+    setBoxes(boxCollection);
     setImage(IMAGE_URL);
   }
 
@@ -87,7 +91,7 @@ export default function App() {
       <Logo />
       <Rank />
       <ImageLinkForm onChangeFunc={onInputChange} buttonSubmit={onButtonSubmit}/>
-      <FaceRecognition image={image} box={box}/>
+      <FaceRecognition image={image} boxes={boxes}/>
     </div>
   );
 }
