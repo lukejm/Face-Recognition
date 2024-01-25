@@ -1,4 +1,5 @@
 import './styles.css';
+import './components/FaceRecognition/FaceRecognition.css';
 import Navigation from "./components/Navigation/Navigation.jsx";
 import Logo from "./components/Logo/Logo.jsx";
 import ImageLinkForm from "./components/ImageLinkForm/ImageLinkForm.jsx";
@@ -8,6 +9,9 @@ import {useState} from "react";
 import PlaceImage from "./components/FaceRecognition/PlaceImage.jsx";
 import credentials from './Credentials.js';
 import FaceBoxes from "./components/FaceRecognition/FaceBoxes.jsx";
+import Signin from "./components/SignIn/Signin.jsx";
+import Register from "./components/Register/Register.jsx";
+
 
 
 
@@ -19,6 +23,7 @@ export default function App() {
   const [image, setImage] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
   const [boxes, setBoxes] = useState(null);
+  const [route, setRoute] = useState('signedOut');
 
   const onImageChange = (IMAGE_URL) => {
     const creds = JSON.parse(credentials());
@@ -68,13 +73,12 @@ export default function App() {
           box.leftCol = boundingBox.left_col.toFixed(3);
           box.bottomRow = boundingBox.bottom_row.toFixed(3);
           box.rightCol = boundingBox.right_col.toFixed(3);
-          // setBox(processImage(box));
           boxCollection.push(box);
         })
       })
       .catch(error => console.log('error', error));
-    // setImage(IMAGE_URL);
-    // setBoxes(boxCollection);
+    setImage(IMAGE_URL);
+    setBoxes(boxCollection);
     console.log(boxCollection);
   }
 
@@ -88,23 +92,56 @@ export default function App() {
 
   const onInputChange = (event) => {
     setImage(event.target.value);
-
   }
 
-  return (
-    <div className='app'>
-      <ParticlesComp />
-      <Navigation />
-      <Logo />
-      <Rank />
-      <ImageLinkForm onChangeFunc={onInputChange} buttonSubmit={onButtonSubmit}/>
-      <div className='center ma'>
-        <div className='absolute mt2'>
-          <PlaceImage imageURL={imageUrl}/>
-          <FaceBoxes appBoxes={boxes} />
+  const onRouteChange = (type) => {
+    setRoute(type);
+  }
+
+  const signedInState = () => {
+    return (
+      <div className='app'>
+        <ParticlesComp />
+        <Navigation routeChange={onRouteChange}/>
+        <Logo />
+        <Rank />
+        <ImageLinkForm onChangeFunc={onInputChange} buttonSubmit={onButtonSubmit}/>
+        <div className='center ma'>
+          <div className='absolute mt2'>
+            <PlaceImage imageURL={imageUrl}/>
+            <FaceBoxes appBoxes={boxes} />
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  const signedOutState = () => {
+    return (
+      <div>
+        <ParticlesComp />
+        <Signin routeChange={onRouteChange} />
+      </div>
+    )
+  }
+
+  const registerState = () => {
+    return (
+      <div>
+        <ParticlesComp />
+        <Register routeChange={onRouteChange} />
+      </div>
+    )
+  }
+
+
+  switch(route) {
+    case 'signedIn':
+      return (<div>{signedInState()}</div>)
+    case 'signedOut':
+      return signedOutState();
+    case 'register':
+      return registerState();
+  }
 }
 

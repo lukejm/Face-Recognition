@@ -1,16 +1,15 @@
 import './FaceRecognition.css';
 
-
 function processImage(box, height, width) {
   return ({
-    leftCol: box.leftCol * width,
-    rightCol: box.rightCol * width,
-    topRow: box.topRow * height,
-    bottomRow: box.bottomRow * height
+    leftCol: Math.round(box.leftCol * width),
+    rightCol: Math.round(box.rightCol * width),
+    topRow: Math.round(box.topRow * height),
+    bottomRow: Math.round(box.bottomRow * height)
   });
 }
 
-function FaceBoxes({ appBoxes }) {
+function FaceBoxes({appBoxes}) {
   if (appBoxes === null) {
     return ('');
   }
@@ -20,8 +19,10 @@ function FaceBoxes({ appBoxes }) {
     const box = processImage(rawBox, 272, 400);
     console.log(box);
     return (
-      <div className='bounding-box' key={count++}
-           style={{top: box.topRow, right: box.rightCol, bottom: box.bottomRow, left: box.leftCol}}></div>
+      <div className='bounding-box'
+           style={{top: box.topRow, right: box.rightCol, bottom: box.bottomRow, left: box.leftCol}}
+           key={count++}>
+      </div>
     );
   });
   return (
