@@ -23,6 +23,8 @@ export default function App() {
   const [image, setImage] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
   const [boxes, setBoxes] = useState(null);
+
+
   const [route, setRoute] = useState('signedOut');
 
   const onImageChange = (IMAGE_URL) => {
