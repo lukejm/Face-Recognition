@@ -1,11 +1,11 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const bcrypt = require('bcrypt');
-const cors = require('cors');
+import express from 'express';
+import bodyParser from "body-parser";
+import bcrypt from 'bcrypt';
+import cors from 'cors';
 
-const saltRounds = 10;
 
 const app = express();
+
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -32,9 +32,12 @@ const storeHashInDatabase = (user, hash) => {
 }
 
 const storeUserPassword = (user, password, salt) => {
-  return bcrypt.hash(password, salt).then((hash) => storeHashInDatabase(user, hash));
+    return new Promise(() => {
+      bcrypt.hash(password, salt).then((hash) => storeHashInDatabase(user, hash));
+    });
 }
-const checkUserPassword = (enteredPassword, storedPassword) => {
+
+async function checkUserPassword(enteredPassword, storedPassword) {
   return bcrypt.compare(enteredPassword, storedPassword);
 }
 
@@ -55,23 +58,27 @@ const doesUserEmailNotExist = (email) => {
 }
 
 app.get('/', (req, res) => {
-  console.log(database);
-  res.send(database);
+  // console.log(database);
+  // res.send(database);
 });
 
 app.post('/signin', (req, res) => {
   const { email, password } = req.body;
+  console.log(email, password);
   if (doesUserEmailNotExist(email)) {
     res.status(400).json('error: bad password user combo BEFORE');
   } else {
-      const user = findUserByEmail(email);
-      checkUserPassword(password, user[0].password)
-        .then((auth) => {
-      if (auth === true) {
-        res.json('login: success');
-      } else {
-        res.status(400).json('error: bad password user combo');
-      }});
+    const user = findUserByEmail(email);
+    Promise.resolve(checkUserPassword(password, user[0].password))
+      .then((result) => {
+        if (result === true) {
+          res.status(200).json({auth: true})
+          console.log('success: logged in.');
+        } else {
+          res.status(200).json({auth: false})
+          console.log('error: not logged in.');
+        }
+    });
   }
 });
 
@@ -109,6 +116,8 @@ app.post('/image', (req, res) => {
   res.json(count);
 });
 
+
+
 app.listen(3000, () => {
   console.log('app is running on port 3000');
 });
@@ -127,7 +136,7 @@ let database = {
       id: '1234',
       name: 'Frank',
       email: 'Frank@gmail.com',
-      password: 'frank',
+      password: '$2b$10$X1QvYM080gO98JEadwAKsuxssaphk.T.ERlW5aWawyHd/82zCAvQK',
       entries: 0,
       joined: new Date()
     }

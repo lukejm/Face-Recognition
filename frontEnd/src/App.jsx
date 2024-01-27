@@ -5,7 +5,7 @@ import Logo from "./components/Logo/Logo.jsx";
 import ImageLinkForm from "./components/ImageLinkForm/ImageLinkForm.jsx";
 import Rank from "./components/Rank/Rank.jsx";
 import ParticlesComp from "./components/Particles/ParticlesComp.jsx";
-import {useState} from "react";
+import { useState, useEffect } from "react";
 import PlaceImage from "./components/FaceRecognition/PlaceImage.jsx";
 import credentials from './Credentials.js';
 import FaceBoxes from "./components/FaceRecognition/FaceBoxes.jsx";
@@ -23,9 +23,13 @@ export default function App() {
   const [image, setImage] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
   const [boxes, setBoxes] = useState(null);
-
-
   const [route, setRoute] = useState('signedOut');
+
+  useEffect(() => {
+    fetch('http://localhost:3000/')
+      .then(response => response.json())
+      .then(console.log);
+  });
 
   const onImageChange = (IMAGE_URL) => {
     const creds = JSON.parse(credentials());
@@ -98,6 +102,11 @@ export default function App() {
 
   const onRouteChange = (type) => {
     setRoute(type);
+  }
+
+  const onCredSubmit = (email, password) => {
+    console.log(email, password);
+    console.log("frank");
   }
 
   const signedInState = () => {
