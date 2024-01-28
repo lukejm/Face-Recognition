@@ -6,9 +6,12 @@ import cors from 'cors';
 
 const app = express();
 
-
 app.use(bodyParser.json());
 app.use(cors());
+
+
+
+app.options('signin', cors());
 
 const findUserById = (id) => {
   return database.users.filter((dUser) => {
@@ -18,7 +21,7 @@ const findUserById = (id) => {
   });
 }
 
-const findUserByEmail = (email) => {
+async function findUserByEmail(email){
   return database.users.filter((dUser) => {
     if (dUser.email === email) {
       return dUser;
@@ -38,6 +41,10 @@ const storeUserPassword = (user, password, salt) => {
 }
 
 async function checkUserPassword(enteredPassword, storedPassword) {
+   return runCryptAlgorithm(enteredPassword, storedPassword);
+}
+
+async function runCryptAlgorithm(enteredPassword, storedPassword) {
   return bcrypt.compare(enteredPassword, storedPassword);
 }
 
@@ -52,38 +59,59 @@ const updateEntryCount = (IdOrEmail) => {
   return user[0].entries;
 }
 
-const doesUserEmailNotExist = (email) => {
+async function doesUserEmailExist(email) {
   const user = findUserByEmail(email);
-  return user.length === 0;
+  return user.length !== 0;
 }
 
 app.get('/', (req, res) => {
-  // console.log(database);
+  // console.log("root: ");
   // res.send(database);
 });
 
-app.post('/signin', (req, res) => {
-  const { email, password } = req.body;
-  console.log(email, password);
-  if (doesUserEmailNotExist(email)) {
-    res.status(400).json('error: bad password user combo BEFORE');
-  } else {
-    const user = findUserByEmail(email);
-    Promise.resolve(checkUserPassword(password, user[0].password))
-      .then((result) => {
-        if (result === true) {
-          res.status(200).json({auth: true})
-          console.log('success: logged in.');
-        } else {
-          res.status(200).json({auth: false})
-          console.log('error: not logged in.');
-        }
-    });
+app.post('/signin', async (req, res) => {
+  const {email, password} = req.body;
+  try {
+    console.log(email, password);
+    const userExists = await doesUserEmailExist(email);
+    if (userExists === true) {
+      const user = await findUserByEmail(email);
+      const auth = await checkUserPassword(password, user[0].password);
+      if (auth === true) {
+        res.json(user[0]);
+        console.log("success");
+      } else {
+        res.json('error: bad password user combo IN');
+        console.log("error");
+      }
+    } else {
+      res.status(400).json('error: bad password user combo BEFORE');
+      console.log("error: no user");
+    }
+  } catch(error) {
+    console.log(error);
   }
+
+  // if (doesUserEmailNotExist(email)) {
+  //   res.status(400).json('error: bad password user combo BEFORE');
+  // } else {
+  //   const user = findUserByEmail(email);
+  //   const auth = bcrypt.compare(password, user[0].password);
+  //   setTimeout(() => {
+  //     if (auth === true) {
+  //       // res.status(400).json('error: bad password user combo ');
+  //       res.status(200).json('logged in.');
+  //       console.log('logged in');
+  //     } else {
+  //       res.status(400).json('error: bad password user combo.');
+  //       console.log('not logged in');
+  //     }
+  //   }, 2000);
+  // }
 });
 
 app.post('/register', (req, res) => {
-  const { email, name, password } = req.body;
+  const {email, name, password} = req.body;
   if (doesUserEmailNotExist(email) === true) {
     database.users.push({
       id: '12345',
@@ -100,7 +128,7 @@ app.post('/register', (req, res) => {
 });
 
 app.get('/profile/:id', (req, res) => {
-  const { id } = req.params;
+  const {id} = req.params;
   const user = findUserById(id);
   if (user === undefined) {
     res.status(400).json('error: user id does not exist');
@@ -110,12 +138,11 @@ app.get('/profile/:id', (req, res) => {
 });
 
 app.post('/image', (req, res) => {
-  const { id } = req.body;
+  const {id} = req.body;
   console.log(id);
   const count = updateEntryCount(id);
   res.json(count);
 });
-
 
 
 app.listen(3000, () => {

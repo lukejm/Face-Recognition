@@ -1,39 +1,64 @@
 import {useEffect, useState, useRef} from "react";
 
 
+async function postCredentials(credentials) {
+  console.log(credentials);
+  try {
+    const res = await fetch('http://localhost:3000/signin/', {
+      method: 'post',
+      mode: 'cors',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        email: credentials.email,
+        password: credentials.password
+      })
+    });
+    const content = await res.json();
+    console.log(content);
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
 function Signin({ routeChange }) {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [credentials, setCredentials] = useState({ email: '', password: ''});
 
-
   const signInPostData = () => {
-    console.log('signInPostData');
     if (credentials.email === undefined
             || credentials.password === undefined
             || (credentials.email === '' && credentials.password === '')) {
       console.log('null values');
     } else {
-      console.log(credentials);
-      fetch('http://localhost:3000/signin', {
-        method: 'post',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          email: credentials.email,
-          password: credentials.password
-        })
-    })
-
-      .then(response => response.json())
-      .then(result => {
-        console.log("homer:", result);
-        if (result.auth === true) {
-          routeChange('signedIn');
-          console.log('signed in');
-        } else {
-          console.log('not signed in');
-        }
-      })
+      postCredentials(credentials);
+      // console.log(credentials);
+      // try {
+      //   fetch('http://localhost:3000/signin', {
+      //     method: 'post',
+      //     headers: {'Content-Type': 'application/json'},
+      //     body: JSON.stringify({
+      //       email: credentials.email,
+      //       password: credentials.password
+      //     })
+      //   })
+      //
+      //     .then(response => response.json())
+      //     .catch(console.log)
+      //     .then(() => console.log);
+      //   console.log("ERORROROR");
+      // } catch (error) {
+      //   console.log(error);
+      // }
+      // .then(result => {
+      //   console.log("homer:", result);
+      //   if (result.auth === true) {
+      //     routeChange('signedIn');
+      //     console.log('signed in');
+      //   } else {
+      //     console.log('not signed in');
+      //   }
+      // })
       // .then(result => setResponse(result));
   }
     setEmail('');
