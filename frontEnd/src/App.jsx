@@ -9,7 +9,7 @@ import { useState, useEffect } from "react";
 import PlaceImage from "./components/FaceRecognition/PlaceImage.jsx";
 import credentials from './Credentials.js';
 import FaceBoxes from "./components/FaceRecognition/FaceBoxes.jsx";
-import Signin from "./components/SignIn/Signin.jsx";
+import Signin from "./components/SignIn/SignIn.jsx";
 import Register from "./components/Register/Register.jsx";
 
 
