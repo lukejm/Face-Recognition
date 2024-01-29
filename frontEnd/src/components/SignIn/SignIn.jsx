@@ -51,8 +51,6 @@ function SignIn({ routeChange, setUser }) {
     processResponse(response);
   }
 
-  // signIn();
-
   if (!loaded) { return (<div>loading...</div>);}
 
   return (

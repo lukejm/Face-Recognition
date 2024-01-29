@@ -62,7 +62,7 @@ function doesUserEmailExist(email) {
 
 app.get('/', (req, res) => {
   // console.log("root: ");
-  // res.send(database);
+  res.send(database);
 });
 
 app.post('/signin', async (req, res, next) => {
@@ -91,16 +91,16 @@ app.post('/signin', async (req, res, next) => {
 
 app.post('/register', (req, res) => {
   const {email, name, password} = req.body;
-  if (doesUserEmailExist(email) === true) {
+  if (doesUserEmailExist(email) === false) {
     database.users.push({
-      id: '12345',
+      id: '12345' + name,
       name: name,
       email: email,
       password: password,
       entries: 0,
       joined: new Date()
     });
-    res.json('success');
+    res.status(200).json({auth: 'success'});
   } else {
     res.status(400).json('error: email already registered.');
   }
