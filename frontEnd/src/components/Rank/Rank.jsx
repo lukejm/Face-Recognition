@@ -1,11 +1,14 @@
 import './Rank.css';
 
-function Rank() {
+function Rank({ name, entries }) {
+  const header = () => {
+    return name + ' has checked: ' + entries + ' images.';
+  }
 
   return (
     <div>
       <div className='white f3 center'>
-        {'Frank Grimes: your current rank is: 5'}
+        {header()}
       </div>
     </div>
   )

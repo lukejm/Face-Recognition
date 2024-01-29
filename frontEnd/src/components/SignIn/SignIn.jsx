@@ -17,11 +17,7 @@ async function fetchCredentials(credentials) {
   }
 }
 
-function processResponse(responseJson) {
-  console.log(responseJson);
-}
-
-function SignIn({ routeChange }) {
+function SignIn({ routeChange, setUser }) {
   const [loaded, setLoaded] = useState(true);
 
   let password = '';
@@ -34,6 +30,16 @@ function SignIn({ routeChange }) {
     email = res.target.value;
   }
 
+  function processResponse(responseJson) {
+    if (JSON.stringify(responseJson) === JSON.stringify({auth: "error"})) {
+      alert('Wrong username or password.');
+    } else {
+      setUser(responseJson);
+      routeChange('signedIn', responseJson);
+
+    }
+  }
+
   const signIn = async () => {
     setLoaded(false);
     const creds = {email: email, password: password};
@@ -41,6 +47,7 @@ function SignIn({ routeChange }) {
     email  = '';
     const response = await fetchCredentials(creds);
     setLoaded(true);
+    console.log(response);
     processResponse(response);
   }
 
@@ -85,8 +92,7 @@ function SignIn({ routeChange }) {
         </form>
       </main>
     </article>
-)
-  ;
+  );
 }
 
 export default SignIn;

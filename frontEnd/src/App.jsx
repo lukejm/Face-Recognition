@@ -24,6 +24,7 @@ export default function App() {
   const [imageUrl, setImageUrl] = useState(null);
   const [boxes, setBoxes] = useState(null);
   const [route, setRoute] = useState('signedOut');
+  const [user, setUser] = useState(undefined);
 
   useEffect(() => {
     fetch('http://localhost:3000/')
@@ -89,6 +90,7 @@ export default function App() {
   }
 
   const onButtonSubmit = () => {
+    // onImageChange(image);
     setImageUrl(image);
     setTimeout(() => {
       // onImageChange(imageUrl);
@@ -104,9 +106,9 @@ export default function App() {
     setRoute(type);
   }
 
-  const onCredSubmit = (email, password) => {
-    console.log(email, password);
-    console.log("frank");
+  const onUserChange = (user) => {
+    setUser(user);
+    console.log(user);
   }
 
   const signedInState = () => {
@@ -115,7 +117,7 @@ export default function App() {
         <ParticlesComp />
         <Navigation routeChange={onRouteChange}/>
         <Logo />
-        <Rank />
+        <Rank name={user.name} entries={user.entries}/>
         <ImageLinkForm onChangeFunc={onInputChange} buttonSubmit={onButtonSubmit}/>
         <div className='center ma'>
           <div className='absolute mt2'>
@@ -131,7 +133,7 @@ export default function App() {
     return (
       <div>
         <ParticlesComp />
-        <Signin routeChange={onRouteChange} />
+        <Signin routeChange={onRouteChange} setUser={onUserChange} />
       </div>
     )
   }
@@ -148,7 +150,7 @@ export default function App() {
 
   switch(route) {
     case 'signedIn':
-      return (<div>{signedInState()}</div>)
+      return signedInState();
     case 'signedOut':
       return signedOutState();
     case 'register':
