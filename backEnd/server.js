@@ -1,12 +1,25 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 import cors from 'cors';
+import knex from 'knex';
+import credentials from "../frontEnd/src/Credentials.js";
 
+const db = knex({
+  client: 'postgresql',
+  connection: {
+    host : 'localhost',
+    port : 5432,
+    user : 'lukejmit',
+    password : JSON.parse(credentials()).PW,
+    database : 'face-recognition'
+  }
+});
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
 
 const findUserById = (id) => {
   return database.users.filter((dUser) => {
@@ -60,9 +73,9 @@ function doesUserEmailExist(email) {
 }
 
 
-app.get('/', (req, res) => {
-  // console.log("root: ");
-  res.send(database);
+app.get('/', async (req, res) => {
+  res.status(200).json('online');
+  console.log(db.select('*').from('users'));
 });
 
 app.post('/signin', async (req, res, next) => {
@@ -89,31 +102,39 @@ app.post('/signin', async (req, res, next) => {
   }
 });
 
-app.post('/register', (req, res) => {
+app.post('/register', async (req, res) => {
   const {email, name, password} = req.body;
   if (doesUserEmailExist(email) === false) {
-    database.users.push({
-      id: '12345' + name,
-      name: name,
-      email: email,
-      password: password,
-      entries: 0,
-      joined: new Date()
-    });
-    res.status(200).json({auth: 'success'});
+    try {
+      const addUser = await db('users')
+        .returning('*')
+        .insert({
+          email: email,
+          name: name,
+          joined: new Date()
+        })
+      const user = await addUser;
+      await res.status(200).json(user[0]);
+    } catch (error) {
+      console.log(error);
+      res.status(400).json("error: unable to register.");
+    }
   } else {
     res.status(400).json('error: email already registered.');
   }
 });
 
-app.get('/profile/:id', (req, res) => {
+app.get('/profile/:id', async (req, res) => {
   const {id} = req.params;
-  const user = findUserById(id);
-  if (user === undefined) {
-    res.status(400).json('error: user id does not exist');
-  } else {
-    res.json(user);
-  }
+  const users = await db.select('*').from('users');
+  res.status(200).json(users);
+  console.log(users);
+  // const user = findUserById(id);
+  // if (user === undefined) {
+  //   res.status(400).json('error: user id does not exist');
+  // } else {
+  //   res.json(user);
+  // }
 });
 
 app.post('/image', (req, res) => {

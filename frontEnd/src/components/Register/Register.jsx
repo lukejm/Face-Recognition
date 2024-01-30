@@ -41,7 +41,8 @@ function Register({ routeChange }) {
     password = '';
     email = '';
     const response = await registerUser(creds);
-    if (JSON.stringify(response) === JSON.stringify({auth: 'success'})) {
+    if (JSON.stringify(response) !== JSON.stringify('error')) {
+      console.log(response);
       routeChange('signedOut');
 
     } else {
